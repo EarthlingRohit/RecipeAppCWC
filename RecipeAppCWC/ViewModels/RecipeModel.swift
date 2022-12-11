@@ -12,6 +12,7 @@ class RecipeModel: ObservableObject {
     @Published var recipes = [Recipe]()
     
     init() {
+        // Calling DataService type-method getLocalData() to get data.
         self.recipes = DataService.getLocalData()
     }
 }
