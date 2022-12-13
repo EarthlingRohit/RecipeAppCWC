@@ -9,8 +9,8 @@ import SwiftUI
 
 struct RecipeListView: View {
     
-    // Reference RecipeModel
-    @ObservedObject var model = RecipeModel()
+    // Reference RecipeModel instance.
+    @EnvironmentObject var model: RecipeModel
     
     var body: some View {
         

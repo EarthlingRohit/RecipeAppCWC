@@ -8,16 +8,21 @@
 import SwiftUI
 
 struct RecipeTabView: View {
+    
     var body: some View {
         
         TabView {
-            Text("Featured View")
+            
+            // Tab 1.
+            RecipeFeaturedView()
                 .tabItem {
                     VStack {
                         Image(systemName: "star.fill")
                         Text("Featured")
                     }
                 }
+            
+            // Tab 2.
             RecipeListView()
                 .tabItem {
                     VStack {
@@ -25,11 +30,9 @@ struct RecipeTabView: View {
                         Text("List")
                     }
                 }
-            
         }
-        
-        
-        
+        // Allow other views in view hierarchy to access same RecipeModel instance.
+        .environmentObject(RecipeModel())
     }
 }
 
