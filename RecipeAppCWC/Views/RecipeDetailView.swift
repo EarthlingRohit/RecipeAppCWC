@@ -10,6 +10,7 @@ import SwiftUI
 struct RecipeDetailView: View {
     
     var recipe: Recipe
+    @State var selectedServingSize = 2
     
     var body: some View {
         
@@ -23,6 +24,28 @@ struct RecipeDetailView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                 
+                // MARK: Recipe title
+                Text(recipe.name)
+                    .font(.largeTitle)
+                    .bold()
+                    .padding(.vertical, 10.0)
+                
+                // MARK: Serving size picker
+                VStack(alignment: .leading) {
+                    
+                    Text("Select your serving size")
+                    // Serving size picker
+                    Picker("", selection: $selectedServingSize) {
+                        Text("2").tag(2)
+                        Text("4").tag(4)
+                        Text("6").tag(6)
+                        Text("8").tag(8)
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .frame(width: 200)
+                    .padding(.bottom, 5.0)
+                }
+                
                 // MARK: Recipe ingredients
                 
                 VStack(alignment: .leading) {
@@ -32,10 +55,11 @@ struct RecipeDetailView: View {
                         .padding(.vertical, 5)
                     
                     ForEach(recipe.ingredients) { item in
-                        Text("• " + item.name)
+                        Text("• " + RecipeModel.getPortion(ingredient: item, recipeServings: recipe.servings, targetServings: selectedServingSize) + " " + item.name.lowercased())
                             .padding(.bottom, 0.5)
                     }
                 }
+                .padding(.bottom, 5.0)
                 
                 Divider()
                 
@@ -53,7 +77,6 @@ struct RecipeDetailView: View {
             }
         }
         .padding(.all)
-        .navigationBarTitle(recipe.name)
     }
 }
 

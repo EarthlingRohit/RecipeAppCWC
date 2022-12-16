@@ -11,6 +11,8 @@ struct RecipeFeaturedView: View {
     
     // Reference RecipeModel instance.
     @EnvironmentObject var model: RecipeModel
+    // For recipe card button link to recipes.
+    @State var isDetailViewShowing = false
     
     var body: some View {
         
@@ -20,7 +22,6 @@ struct RecipeFeaturedView: View {
                 .font(.largeTitle)
                 .fontWeight(.bold)
                 .padding(.leading, 25.0)
-                .padding(.top, 20.0)
             
             GeometryReader { geo in
                 
@@ -31,25 +32,37 @@ struct RecipeFeaturedView: View {
                         // Show only featured recipes.
                         if model.recipes[index].featured == true {
                             
-                            // Featured recipe card.
-                            ZStack {
+                            // Recipe card button.
+                            Button {
+                                // Show recipe detail view sheet.
+                                self.isDetailViewShowing = true
                                 
-                                Rectangle()
-                                    .foregroundColor(.white)
-                                
-                                VStack(spacing: 0.0) {
-                                    // Featured recipe image.
-                                    Image(model.recipes[index].image)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fill)
-                                        .clipped()
+                            } label: {
+                                // Featured recipe card.
+                                ZStack {
                                     
-                                    // Featured recipe name.
-                                    Text(model.recipes[index].name)
-                                        .padding(.all, 5.0)
-                                        .fontWeight(.bold)
+                                    Rectangle()
+                                        .foregroundColor(.white)
+                                    
+                                    VStack(spacing: 0.0) {
+                                        // Featured recipe image.
+                                        Image(model.recipes[index].image)
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                            .clipped()
+                                        
+                                        // Featured recipe name.
+                                        Text(model.recipes[index].name)
+                                            .padding(.all, 5.0)
+                                            .fontWeight(.bold)
+                                    }
                                 }
                             }
+                            .sheet(isPresented: $isDetailViewShowing) {
+                                // Show recipe detail view.
+                                RecipeDetailView(recipe: model.recipes[index])
+                            }
+                            .buttonStyle(PlainButtonStyle())
                             .frame(width: geo.size.width - (1/8 * (geo.size.width)), height: geo.size.height - (1/8 * geo.size.height), alignment: .center)
                             .cornerRadius(10.0)
                             .padding(.bottom, 20.0)
@@ -57,7 +70,6 @@ struct RecipeFeaturedView: View {
                         }
                     }
                 }
-                //.padding(.top, 10.0)
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
                 .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
             }
@@ -72,6 +84,7 @@ struct RecipeFeaturedView: View {
             }
             .padding([.leading, .bottom], 25.0)
         }
+        .padding(.top, 20.0)
     }
 }
 
