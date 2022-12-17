@@ -13,19 +13,21 @@ struct RecipeFeaturedView: View {
     @EnvironmentObject var model: RecipeModel
     // For recipe card button link to recipes.
     @State var isDetailViewShowing = false
+    // To track selected tab in TabView.
+    @State var tabSelectionIndex = 0
     
     var body: some View {
         
         VStack(alignment: .leading, spacing: 0.0) {
             
             Text("Featured Recipes")
-                .font(.largeTitle)
                 .fontWeight(.bold)
                 .padding(.leading, 25.0)
+                .font(Font.custom("Avenir Heavy", size: 26.0))
             
             GeometryReader { geo in
                 
-                TabView {
+                TabView(selection: $tabSelectionIndex) {
                     // Loop through each recipe.
                     ForEach(0..<model.recipes.count) { index in
                         
@@ -58,6 +60,8 @@ struct RecipeFeaturedView: View {
                                     }
                                 }
                             }
+                            .font(Font.custom("Avenir Heavy", size: 18.0))
+                            .tag(index)
                             .sheet(isPresented: $isDetailViewShowing) {
                                 // Show recipe detail view.
                                 RecipeDetailView(recipe: model.recipes[index])
@@ -76,15 +80,27 @@ struct RecipeFeaturedView: View {
             
             VStack(alignment: .leading, spacing: 10.0) {
                 Text("Preparation Time:")
-                    .font(.headline)
-                Text("30 minutes")
+                    .font(Font.custom("Avenir Heavy", size: 18.0))
+                Text(model.recipes[tabSelectionIndex].prepTime)
+                    .font(Font.custom("Avenir", size: 16.0))
                 Text("Highlights:")
-                    .font(.headline)
-                Text("Tasty, Healthy, Yummy")
+                    .font(Font.custom("Avenir Heavy", size: 18.0))
+                RecipeHighlights(highlights: model.recipes[tabSelectionIndex].highlights)
             }
             .padding([.leading, .bottom], 25.0)
         }
+        .onAppear(perform: {
+            setFeaturedIndex()
+        })
         .padding(.top, 20.0)
+    }
+    
+    // Function to find index of featured recipes.
+    func setFeaturedIndex() {
+        var index = model.recipes.firstIndex { recipe in
+            return recipe.featured
+        }
+        tabSelectionIndex = index ?? 0
     }
 }
 
