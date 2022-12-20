@@ -18,6 +18,9 @@ struct RecipeFeaturedView: View {
     
     var body: some View {
         
+        // Put featured recipes in array.
+        let featuredRecipes = model.recipes.filter({ $0.featured })
+        
         VStack(alignment: .leading, spacing: 0.0) {
             
             Text("Featured Recipes")
@@ -29,49 +32,41 @@ struct RecipeFeaturedView: View {
                 
                 TabView(selection: $tabSelectionIndex) {
                     // Loop through each recipe.
-                    ForEach(0..<model.recipes.count) { index in
+                    ForEach(0..<featuredRecipes.count) { index in
                         
-                        // Show only featured recipes.
-                        if model.recipes[index].featured == true {
+                        // Recipe card button.
+                        Button {
+                            // Show recipe detail view sheet.
+                            self.isDetailViewShowing = true
                             
-                            // Recipe card button.
-                            Button {
-                                // Show recipe detail view sheet.
-                                self.isDetailViewShowing = true
+                        } label: {
+                            // Featured recipe card.
+                            ZStack {
                                 
-                            } label: {
-                                // Featured recipe card.
-                                ZStack {
+                                Rectangle()
+                                    .foregroundColor(.white)
+                                
+                                VStack(spacing: 0.0) {
+                                    // Featured recipe image.
+                                    Image(featuredRecipes[index].image)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .clipped()
                                     
-                                    Rectangle()
-                                        .foregroundColor(.white)
-                                    
-                                    VStack(spacing: 0.0) {
-                                        // Featured recipe image.
-                                        Image(model.recipes[index].image)
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fill)
-                                            .clipped()
-                                        
-                                        // Featured recipe name.
-                                        Text(model.recipes[index].name)
-                                            .padding(.all, 5.0)
-                                            .fontWeight(.bold)
-                                    }
+                                    // Featured recipe name.
+                                    Text(featuredRecipes[index].name)
+                                        .padding(.all, 5.0)
+                                        .fontWeight(.bold)
                                 }
                             }
-                            .font(Font.custom("Avenir Heavy", size: 18.0))
-                            .tag(index)
-                            .sheet(isPresented: $isDetailViewShowing) {
-                                // Show recipe detail view.
-                                RecipeDetailView(recipe: model.recipes[index])
-                            }
-                            .buttonStyle(PlainButtonStyle())
-                            .frame(width: geo.size.width - (1/8 * (geo.size.width)), height: geo.size.height - (1/8 * geo.size.height), alignment: .center)
-                            .cornerRadius(10.0)
-                            .padding(.bottom, 20.0)
-                            .shadow(color: Color(.sRGB, red: 0, green: 0, blue: 0, opacity: 0.3), radius: 10, x: -2, y: 2)
                         }
+                        .font(Font.custom("Avenir Heavy", size: 18.0))
+                        .tag(index)
+                        .buttonStyle(PlainButtonStyle())
+                        .frame(width: geo.size.width - (1/8 * (geo.size.width)), height: geo.size.height - (1/8 * geo.size.height), alignment: .center)
+                        .cornerRadius(10.0)
+                        .padding(.bottom, 20.0)
+                        .shadow(color: Color(.sRGB, red: 0, green: 0, blue: 0, opacity: 0.3), radius: 10, x: -2, y: 2)
                     }
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
@@ -89,18 +84,11 @@ struct RecipeFeaturedView: View {
             }
             .padding([.leading, .bottom], 25.0)
         }
-        .onAppear(perform: {
-            setFeaturedIndex()
-        })
-        .padding(.top, 20.0)
-    }
-    
-    // Function to find index of featured recipes.
-    func setFeaturedIndex() {
-        var index = model.recipes.firstIndex { recipe in
-            return recipe.featured
+        .sheet(isPresented: $isDetailViewShowing) {
+            // Show recipe detail view.
+            RecipeDetailView(recipe: featuredRecipes[tabSelectionIndex])
         }
-        tabSelectionIndex = index ?? 0
+        .padding(.top, 20.0)
     }
 }
 
