@@ -9,9 +9,11 @@ import SwiftUI
 
 struct RecipeTabView: View {
     
+    @State var selectedTab = Constants.featuredTab
+    
     var body: some View {
         
-        TabView {
+        TabView(selection: $selectedTab) {
             
             // Tab 1.
             RecipeFeaturedView()
@@ -21,8 +23,19 @@ struct RecipeTabView: View {
                         Text("Featured")
                     }
                 }
+                .tag(Constants.featuredTab)
             
             // Tab 2.
+            RecipeCategoryView(selectedTab: $selectedTab)
+                .tabItem {
+                    VStack {
+                        Image(systemName: "square.grid.2x2")
+                        Text("Categories")
+                    }
+                }
+                .tag(Constants.categoriesTab)
+            
+            // Tab 3.
             RecipeListView()
                 .tabItem {
                     VStack {
@@ -30,6 +43,7 @@ struct RecipeTabView: View {
                         Text("List")
                     }
                 }
+                .tag(Constants.listTab)
         }
         // Allow other views in view hierarchy to access same RecipeModel instance.
         .environmentObject(RecipeModel())

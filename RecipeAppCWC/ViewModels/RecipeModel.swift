@@ -10,10 +10,17 @@ import Foundation
 class RecipeModel: ObservableObject {
     
     @Published var recipes = [Recipe]()
+    @Published var categories = Set<String>()
+    @Published var selectedCategory: String?
     
     init() {
         // Calling DataService type-method getLocalData() to get data.
         self.recipes = DataService.getLocalData()
+        // Put cuisine categories in a Set.
+        self.categories = Set(self.recipes.map({ r in
+            return r.category
+        }))
+        self.categories.update(with: Constants.defaultListFilter)
     }
     
     // Function to get ingredient portions.
